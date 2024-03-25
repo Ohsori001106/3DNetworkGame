@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterAttackAbility : MonoBehaviour
+public class CharacterAttackAbility : CharacterAbility
 {
 
     // SOLID 법칙: 객체지향 5가지 법칙
@@ -17,7 +17,7 @@ public class CharacterAttackAbility : MonoBehaviour
     private Animator _animator;
 
     private float _attackTimer;
-    private float _attackCoolTime = 1;
+    
     void Start()
     {
         _animator = GetComponent<Animator>();
@@ -27,7 +27,7 @@ public class CharacterAttackAbility : MonoBehaviour
     void Update()
     {
         _attackTimer += Time.deltaTime;
-        if (Input.GetMouseButtonDown(0) && _attackTimer >=_attackCoolTime)
+        if (Input.GetMouseButtonDown(0) && _attackTimer >=Owner.Stat.AttackCoolTime)
         {
             _attackTimer = 0;
             _animator.SetTrigger($"Attack{Random.Range(1, 4)}");
