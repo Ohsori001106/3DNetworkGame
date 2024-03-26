@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,9 @@ public class CharacterMoveAbility : CharacterAbility
 {
     private CharacterController _characterController;
     private Animator _animator;
+
+    
+
 
     private bool _isRunning;
     [SerializeField]
@@ -21,6 +25,10 @@ public class CharacterMoveAbility : CharacterAbility
 
     private void Update()
     {
+        if (!Owner.PhotonView.IsMine)
+        {
+            return;
+        }
         float speed = Owner.Stat.MoveSpeed;
         _isRunning = false;
         if (Input.GetKey(KeyCode.LeftShift) && Owner.Stat.Stamina > 0)

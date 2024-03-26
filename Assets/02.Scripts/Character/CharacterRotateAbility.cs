@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,11 +12,21 @@ public class CharacterRotateAbility : CharacterAbility
     //public float RotationSpeed = 200; // 초당 200도까지 회전 가능한 속도
     private float _mx;
     private float _my;
-   
 
-       void Update()
+    private void Start()
     {
+        if (Owner.PhotonView.IsMine)
+        {
+            GameObject.FindWithTag("FollowCamera").GetComponent<CinemachineVirtualCamera>().Follow = CameraRoot;
+        }
         
+    }
+    void Update()
+    {
+        if (!Owner.PhotonView.IsMine)
+        {
+            return;
+        }
         // 순서
         // 1. 마우스 입력 값을 받는다.
 

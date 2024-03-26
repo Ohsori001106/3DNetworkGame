@@ -26,6 +26,11 @@ public class CharacterAttackAbility : CharacterAbility
     // Update is called once per frame
     void Update()
     {
+        if (!Owner.PhotonView.IsMine)
+        {
+            return;
+        }
+
         _attackTimer += Time.deltaTime;
         if (Input.GetMouseButtonDown(0) && _attackTimer >=Owner.Stat.AttackCoolTime && Owner.Stat.Stamina >= Owner.Stat.AttackConsumeStamina)
         {
