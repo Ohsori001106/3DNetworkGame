@@ -5,42 +5,54 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class CharacterMoveAbility : CharacterAbility
 {
-
-
-    
-
-    // 목표: [W],[A],[S],[D] 및 방향키를 누르면 캐릭터를 그 뱡향으로 이동시키고 싶다.
     private CharacterController _characterController;
     private Animator _animator;
-    private Character _owner;
+
+    private bool _isRunning;
+    [SerializeField]
+    private float gravity = -9.81f; // 중력 값 설정
+
     private void Start()
     {
-        _owner.GetComponent<Character>();
+       
         _characterController = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
-        // 순서
-        // 1. 사용자의 키보드 입력을 받는다.
+        float speed = Owner.Stat.MoveSpeed;
+        _isRunning = false;
+        if (Input.GetKey(KeyCode.LeftShift) && Owner.Stat.Stamina > 0)
+        {
+            _isRunning = true;
+            speed = Owner.Stat.RunSpeed;
+            Owner.Stat.Stamina -= Owner.Stat.RunConsumeStamina * Time.deltaTime;
+        }
+        else
+        {
+            Owner.Stat.Stamina += Owner.Stat.RecoveryStamina * Time.deltaTime;
+            if(Owner.Stat.Stamina >= Owner.Stat.MaxStamina)
+            {
+                Owner.Stat.Stamina = Owner.Stat.MaxStamina;
+            }
+        }
+        
+
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
 
-        // 2. '캐릭터가 바라보는 방향'을 기준으로 방향을 설정한다.
         Vector3 dir = new Vector3(h, 0, v);
         dir.Normalize();
         dir = Camera.main.transform.TransformDirection(dir);
-        
 
         _animator.SetFloat("Move", dir.magnitude);
 
-        // 4. 중력 적용하세요.
-        dir.y = -1f;
+        if (!_characterController.isGrounded)
+        {
+            dir.y += gravity * Time.deltaTime; // 중력을 적용합니다.
+        }
 
-        // 3. 이동속도에 따라 그 방향으로 이동한다.
-        _characterController.Move(dir * (Owner.Stat.MoveSpeed * Time.deltaTime));
-        
-        
+        _characterController.Move(dir * (speed * Time.deltaTime));
     }
 }

@@ -27,8 +27,9 @@ public class CharacterAttackAbility : CharacterAbility
     void Update()
     {
         _attackTimer += Time.deltaTime;
-        if (Input.GetMouseButtonDown(0) && _attackTimer >=Owner.Stat.AttackCoolTime)
+        if (Input.GetMouseButtonDown(0) && _attackTimer >=Owner.Stat.AttackCoolTime && Owner.Stat.Stamina >= Owner.Stat.AttackConsumeStamina)
         {
+            Owner.Stat.Stamina -= Owner.Stat.AttackConsumeStamina;
             _attackTimer = 0;
             _animator.SetTrigger($"Attack{Random.Range(1, 4)}");
         }
