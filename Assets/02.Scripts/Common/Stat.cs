@@ -19,8 +19,8 @@ public class Stat
     public float MaxStamina;
     public float RecoveryStamina = 5;
     public float RunConsumeStamina = 10;
-    
 
+    public int Damage;
     public void Init()
     {
         Health = MaxHealth;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class CharacterAttackAbility : CharacterAbility
 {
@@ -36,7 +37,40 @@ public class CharacterAttackAbility : CharacterAbility
         {
             Owner.Stat.Stamina -= Owner.Stat.AttackConsumeStamina;
             _attackTimer = 0;
-            _animator.SetTrigger($"Attack{Random.Range(1, 4)}");
+
+            PlayAttackAnumation(Random.Range(1, 4));
+            Owner.PhotonView.RPC(nameof(PlayAttackAnumation), RpcTarget.All, Random.Range(1,4));
+            // RpcTarget.All : 모두에게
+            // RpcTarget.Others : 나 자신을 제외하고 모두에게
+            // RpcTarget.Master : 방장에게만
         }
+    }
+
+    [PunRPC]
+    public void PlayAttackAnumation(int index)
+    {
+        _animator.SetTrigger($"Attack{index}");
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if(Owner.PhotonView.IsMine == false|| other.transform == transform )
+        {
+            return;
+        }
+
+        // 0: 개방 폐쇄 원칙
+        // 수정에는 닫혀있고, 확장에는 열려있다.
+        IDamaged damagedAbleObject = other.GetComponent<IDamaged>();
+        if (damagedAbleObject != null)
+        {
+            PhotonView photonView = other.GetComponent<PhotonView>();
+            if (photonView != null)
+            {
+                photonView.RPC("Damged", RpcTarget.All, Owner.Stat.Damage);
+            }
+            // damagedAbleObject.Damaged(Owner.Stat.Damage);
+        }
+        
     }
 }

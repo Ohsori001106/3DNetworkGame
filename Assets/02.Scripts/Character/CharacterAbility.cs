@@ -8,7 +8,7 @@ public class CharacterAbility : MonoBehaviour
 
     protected void Awake()
     {
-        Owner = GetComponent<Character>();
+        Owner = GetComponentInParent<Character>();
     }
    
 }
