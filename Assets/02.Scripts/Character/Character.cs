@@ -8,6 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterMoveAbility))]
 [RequireComponent(typeof(CharacterRotateAbility))]
 [RequireComponent(typeof(CharacterAttackAbility))]
+[RequireComponent(typeof(CharacterShakeAbility))]
 public class Character : MonoBehaviour, IPunObservable , IDamaged
 {
     public PhotonView PhotonView { get; private set; }
@@ -24,6 +25,7 @@ public class Character : MonoBehaviour, IPunObservable , IDamaged
         if (PhotonView.IsMine)
         {
             UI_CharacterStat.Instance.MyCharacter = this;
+            MinimapCamera.instance.MyCharacter = this;
         }
     }
 
@@ -61,9 +63,21 @@ public class Character : MonoBehaviour, IPunObservable , IDamaged
     }
 
     [PunRPC]
-    public void Damaged(int damaged)
+    public void Damaged(int damage)
     {
-        Stat.Health -= damaged;
+        GetComponent<CharacterShakeAbility>().Shake();
+        if (PhotonView.IsMine)
+        {
+            Stat.Health -= damage;
+            
+            if (TryGetComponent<CinemachineImpulseSource>(out CinemachineImpulseSource cinemachineImpulseSource))
+            {
+                float strength = 0.2f;
+                cinemachineImpulseSource.GenerateImpulseWithVelocity(UnityEngine.Random.insideUnitSphere.normalized * strength);
+            }
+           
+            UI_DamagedEffect.Instance.Show(0.4f);
+        }
     }
 
 }

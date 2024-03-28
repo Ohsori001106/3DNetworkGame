@@ -16,12 +16,20 @@ public class CharacterAttackAbility : CharacterAbility
     // - 기존의 클래스로 해결할 수 없다면 새로운 클래스를 구현
     
     private Animator _animator;
+    public Collider WeaponCollider;
+
+    // 때린 애들을 기억해두는 리스트
+    private List<IDamaged> _damagedList = new List<IDamaged>();
 
     private float _attackTimer;
+
+    public GameObject HitEffectPrefab;
+    
     
     void Start()
     {
         _animator = GetComponent<Animator>();
+        
     }
 
     // Update is called once per frame
@@ -36,16 +44,19 @@ public class CharacterAttackAbility : CharacterAbility
         if (Input.GetMouseButtonDown(0) && _attackTimer >=Owner.Stat.AttackCoolTime && Owner.Stat.Stamina >= Owner.Stat.AttackConsumeStamina)
         {
             Owner.Stat.Stamina -= Owner.Stat.AttackConsumeStamina;
-            _attackTimer = 0;
+            
 
-            PlayAttackAnumation(Random.Range(1, 4));
+            //PlayAttackAnumation(Random.Range(1, 4));
+
             Owner.PhotonView.RPC(nameof(PlayAttackAnumation), RpcTarget.All, Random.Range(1,4));
-            // RpcTarget.All : 모두에게
+
+            _attackTimer = 0;
+            // Rpcsrget.All : 모두에게
             // RpcTarget.Others : 나 자신을 제외하고 모두에게
             // RpcTarget.Master : 방장에게만
         }
     }
-
+    
     [PunRPC]
     public void PlayAttackAnumation(int index)
     {
@@ -62,15 +73,45 @@ public class CharacterAttackAbility : CharacterAbility
         // 0: 개방 폐쇄 원칙
         // 수정에는 닫혀있고, 확장에는 열려있다.
         IDamaged damagedAbleObject = other.GetComponent<IDamaged>();
-        if (damagedAbleObject != null)
+        if (damagedAbleObject != null) 
         {
+            if (_damagedList.Contains(damagedAbleObject))
+            {
+                return;
+            }
+
+            // 안 맞은 애면 때린 리스트에 추가
+            _damagedList.Add(damagedAbleObject);
+
+
             PhotonView photonView = other.GetComponent<PhotonView>();
             if (photonView != null)
             {
-                photonView.RPC("Damged", RpcTarget.All, Owner.Stat.Damage);
+                
+                photonView.RPC("Damaged", RpcTarget.All, Owner.Stat.Damage);
+                
+                photonView.RPC("HitEffect", RpcTarget.All, (other.transform.position + transform.position) / 2f);
             }
             // damagedAbleObject.Damaged(Owner.Stat.Damage);
         }
         
+    }
+
+    [PunRPC]
+    public void HitEffect(Vector3 position)
+    {
+        Instantiate(HitEffectPrefab, position, Quaternion.identity);
+    }
+
+    public void ActiveCollider()
+    {
+        WeaponCollider.enabled = true;
+    }
+    public void InactiveCollider()
+    {
+        WeaponCollider.enabled = false;
+
+        // 리스트 초기화
+        _damagedList.Clear();
     }
 }
