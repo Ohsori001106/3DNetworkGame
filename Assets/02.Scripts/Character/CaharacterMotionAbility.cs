@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class CaharacterMotionAbility : CharacterAbility
 {
@@ -15,7 +16,7 @@ public class CaharacterMotionAbility : CharacterAbility
             Owner.PhotonView.RPC(nameof(PlayMotion), Photon.Pun.RpcTarget.All, 1);
         }
     }
-    
+    [PunRPC]
     private void PlayMotion(int number)
     {
         GetComponent<Animator>().SetTrigger($"Motion{number}");
