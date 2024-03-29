@@ -26,4 +26,6 @@ public class Stat
         Health = MaxHealth;
         Stamina = MaxStamina;
     }
+
+    
 }

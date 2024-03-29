@@ -13,6 +13,7 @@ public class Character : MonoBehaviour, IPunObservable , IDamaged
 {
     public PhotonView PhotonView { get; private set; }
     public Stat Stat;
+    public State State { get; private set; } = State.Live;
     private Vector3 _receivedPosition;
     private Quaternion _receivedRotation;
 
@@ -65,20 +66,44 @@ public class Character : MonoBehaviour, IPunObservable , IDamaged
     [PunRPC]
     public void Damaged(int damage)
     {
+        if (State == State.Death)
+        {
+            return;
+        }
+        Stat.Health -= damage;
+        if (Stat.Health <= 0)
+        {
+            PhotonView.RPC(nameof(Death),RpcTarget.All);
+        }
+
         GetComponent<CharacterShakeAbility>().Shake();
         if (PhotonView.IsMine)
         {
-            Stat.Health -= damage;
-            
-            if (TryGetComponent<CinemachineImpulseSource>(out CinemachineImpulseSource cinemachineImpulseSource))
-            {
-                float strength = 0.2f;
-                cinemachineImpulseSource.GenerateImpulseWithVelocity(UnityEngine.Random.insideUnitSphere.normalized * strength);
-            }
-           
-            UI_DamagedEffect.Instance.Show(0.4f);
+            OnDamagedMine();
         }
+        
     }
 
+    private void OnDamagedMine()
+    {
+        
+
+        if (TryGetComponent<CinemachineImpulseSource>(out CinemachineImpulseSource cinemachineImpulseSource))
+        {
+            float strength = 0.2f;
+            cinemachineImpulseSource.GenerateImpulseWithVelocity(UnityEngine.Random.insideUnitSphere.normalized * strength);
+        }
+
+        UI_DamagedEffect.Instance.Show(0.4f);
+    }
+
+    [PunRPC]
+    public void Death()
+    {
+        State = State.Death;
+
+        GetComponent<Animator>().SetTrigger("Death");
+        GetComponent<CharacterAttackAbility>().InactiveCollider();
+    }
 }
 

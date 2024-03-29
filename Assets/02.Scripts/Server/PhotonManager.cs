@@ -9,7 +9,8 @@ using Photon.Realtime;
 // 역할: 포톤 서버 연결 관리자
 public class PhotonManager : MonoBehaviourPunCallbacks // PUN의 다양한 서버 이벤트(콜백 함수)를 받는다.
 {
-    
+    public GameObject[] spawnPoints;
+
     void Start()
     {
         // 목적: 연결을 하고싶다.
@@ -89,7 +90,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks // PUN의 다양한 서�
         Debug.Log($"RoomName: {PhotonNetwork.CurrentRoom.PlayerCount}");
         Debug.Log($"RoomName: {PhotonNetwork.CurrentRoom.MaxPlayers }");
 
-        PhotonNetwork.Instantiate("Character",Vector3.zero, Quaternion.identity);
+        /*int randomIndex = Random.Range(0, spawnPoints.Length);
+        Vector3 spawnPosition = spawnPoints[randomIndex].transform.position;*/
+
+        Vector3 randomAngle = new Vector3(0,Random.Range(0,360),0);
+        PhotonNetwork.Instantiate(nameof(Character), BattleScene.Instance.GetRandomSpawnPoint(), Quaternion.Euler(randomAngle));
+
     }
 
 

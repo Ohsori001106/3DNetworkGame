@@ -35,7 +35,7 @@ public class CharacterAttackAbility : CharacterAbility
     // Update is called once per frame
     void Update()
     {
-        if (!Owner.PhotonView.IsMine)
+        if (Owner.State == State.Death || !Owner.PhotonView.IsMine)
         {
             return;
         }
