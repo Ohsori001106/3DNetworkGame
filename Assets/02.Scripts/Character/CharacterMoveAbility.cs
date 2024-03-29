@@ -63,4 +63,13 @@ public class CharacterMoveAbility : CharacterAbility
 
         _characterController.Move(dir * (speed * Time.deltaTime));
     }
+
+    public void Teleport(Vector3 position)
+    {
+        _characterController.enabled = false;
+
+        transform.position = position;
+
+        _characterController.enabled = true;
+    }
 }

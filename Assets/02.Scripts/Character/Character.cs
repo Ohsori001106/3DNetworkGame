@@ -30,6 +30,10 @@ public class Character : MonoBehaviour, IPunObservable , IDamaged
         }
     }
 
+    private void Start()
+    {
+        SetRandomPositionAndRotate();
+    }
     private void Update()
     {
         if (!PhotonView.IsMine)
@@ -73,6 +77,7 @@ public class Character : MonoBehaviour, IPunObservable , IDamaged
         Stat.Health -= damage;
         if (Stat.Health <= 0)
         {
+            State = State.Death;
             PhotonView.RPC(nameof(Death),RpcTarget.All);
         }
 
@@ -90,18 +95,16 @@ public class Character : MonoBehaviour, IPunObservable , IDamaged
 
         if (TryGetComponent<CinemachineImpulseSource>(out CinemachineImpulseSource cinemachineImpulseSource))
         {
-            float strength = 0.2f;
+            float strength = 0.4f;
             cinemachineImpulseSource.GenerateImpulseWithVelocity(UnityEngine.Random.insideUnitSphere.normalized * strength);
         }
 
-        UI_DamagedEffect.Instance.Show(0.4f);
+        UI_DamgedEffect.Instance.Show(0.5f);
     }
 
     [PunRPC]
     public void Death()
     {
-        State = State.Death;
-
         GetComponent<Animator>().SetTrigger("Death");
         GetComponent<CharacterAttackAbility>().InactiveCollider();
 
@@ -109,7 +112,7 @@ public class Character : MonoBehaviour, IPunObservable , IDamaged
 
         if (PhotonView.IsMine)
         {
-            StartCoroutine(Death_Coroutine());
+           StartCoroutine(Death_Coroutine());
         }
     }
 
@@ -117,17 +120,36 @@ public class Character : MonoBehaviour, IPunObservable , IDamaged
     {
         yield return new WaitForSeconds(5f);
 
-        PhotonView.RPC(nameof(Live),RpcTarget.All);
+        SetRandomPositionAndRotate();
 
-        transform.position = BattleScene.Instance.GetRandomSpawnPoint();
+        PhotonView.RPC(nameof(Live),RpcTarget.All);
     }
 
+    [PunRPC]
     private void Live()
     {
         State = State.Live;
-        Stat.Init();
-
+        Stat.Init();  
         GetComponent<Animator>().SetTrigger("Live");
+    }
+
+    private void SetRandomPositionAndRotate()
+    {
+        Vector3 spawnPoint = BattleScene.Instance.GetRandomSpawnPoint();
+        GetComponent<CharacterMoveAbility>().Teleport(spawnPoint);
+        GetComponent<CharacterRotateAbility>().SetRandomRotation();
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("DeathZone"))
+        {
+            if (PhotonView.IsMine)
+            {
+                // 태그가 "DeathZone"인 객체와 충돌 시 Health를 0으로 설정
+                PhotonView.RPC(nameof(Damaged), RpcTarget.All, Stat.MaxHealth);
+            }
+        }
     }
 }
 

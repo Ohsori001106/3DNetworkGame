@@ -93,8 +93,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks // PUN의 다양한 서�
         /*int randomIndex = Random.Range(0, spawnPoints.Length);
         Vector3 spawnPosition = spawnPoints[randomIndex].transform.position;*/
 
-        Vector3 randomAngle = new Vector3(0,Random.Range(0,360),0);
-        PhotonNetwork.Instantiate(nameof(Character), BattleScene.Instance.GetRandomSpawnPoint(), Quaternion.Euler(randomAngle));
+        
+        PhotonNetwork.Instantiate(nameof(Character),Vector3.zero,Quaternion.identity);
 
     }
 

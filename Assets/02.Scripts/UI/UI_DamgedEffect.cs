@@ -1,21 +1,22 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CanvasGroup))]
-public class UI_DamagedEffect : MonoBehaviour
+[RequireComponent(typeof(AnimationCurve))]
+public class UI_DamgedEffect : MonoBehaviour
 {
-    public static UI_DamagedEffect Instance { get; private set; }
-    public AnimationCurve ShowCirve;
+    public static UI_DamgedEffect Instance { get; private set; }
+    public AnimationCurve ShowCurve;
     private CanvasGroup _canvasGroup;
 
     private void Awake()
     {
         Instance = this;
+
         _canvasGroup = GetComponent<CanvasGroup>();
         _canvasGroup.alpha = 0;
     }
-    
+
     public void Show(float duration)
     {
         _canvasGroup.alpha = 1f;
@@ -30,7 +31,8 @@ public class UI_DamagedEffect : MonoBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            _canvasGroup.alpha = Mathf.Lerp( 1 , 0 , elapsedTime / duration);
+            _canvasGroup.alpha = ShowCurve.Evaluate(elapsedTime / duration);
+
             yield return null;
         }
 

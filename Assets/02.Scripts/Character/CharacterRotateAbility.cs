@@ -42,5 +42,11 @@ public class CharacterRotateAbility : CharacterAbility
         CameraRoot.localEulerAngles = new Vector3(-_my, 0, 0);
 
     }
-   
+
+    public void SetRandomRotation()
+    {
+        _mx = Random.Range(0, 360);
+        _my = 0;
+    }
+
 }
