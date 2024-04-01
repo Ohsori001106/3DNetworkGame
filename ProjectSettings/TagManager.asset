@@ -6,6 +6,8 @@ TagManager:
   tags:
   - FollowCamera
   - DeathZone
+  - Health_Item
+  - Stamina_Item
   layers:
   - Default
   - TransparentFX

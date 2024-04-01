@@ -2861,7 +2861,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd960cf279ad38c4281ef6be4567f159, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravity: -9.81
 --- !u!114 &6510437693158119286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2888,7 +2887,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WeaponCollider: {fileID: 9077297261486103845}
-  HitEffectPrefab: {fileID: 7583604946631825805, guid: 5673e3d650ea6da4fb0b89aeb963ecc5, type: 3}
 --- !u!114 &6138778815056151673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2913,6 +2911,9 @@ MonoBehaviour:
     MaxStamina: 100
     RecoveryStamina: 5
     RunConsumeStamina: 10
+    JumpPower: 3
+    JumpConsumeStamina: 10
+    IsJumping: 0
     Damage: 10
 --- !u!114 &5465002889531898406
 MonoBehaviour:
@@ -2965,6 +2966,24 @@ MonoBehaviour:
   - Type: 9
     SynchronizeType: 1
     Name: Attack3
+  - Type: 9
+    SynchronizeType: 0
+    Name: Death
+  - Type: 4
+    SynchronizeType: 0
+    Name: IsDeath
+  - Type: 9
+    SynchronizeType: 0
+    Name: Live
+  - Type: 9
+    SynchronizeType: 0
+    Name: Motion1
+  - Type: 9
+    SynchronizeType: 0
+    Name: Jump
+  - Type: 9
+    SynchronizeType: 0
+    Name: Attack4
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
