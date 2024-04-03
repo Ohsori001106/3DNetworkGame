@@ -5,11 +5,10 @@ using UnityEngine;
 
 [RequireComponent(typeof(PhotonView))]
 [RequireComponent(typeof(Collider))]
-public class ItemObject : MonoBehaviour
+public class ItemObject : MonoBehaviourPun
 {
     [Header("아이템 타입")]
     public ItemType ItemType;
-
     public float Value = 100;
 
     private void OnTriggerEnter(Collider other)
@@ -17,27 +16,34 @@ public class ItemObject : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Character character = other.GetComponent<Character>();
-            if (character.State == State.Death)
+            if(character.State == State.Death)
             {
                 return;
             }
-
             switch (ItemType)
             {
-                case ItemType.Health_potion:
+                case ItemType.HealthPotion:
                 {
-                    character.Stat.Health += Value;
+                    character.Stat.Health += (int)Value;
+                    if (character.Stat.Health >= character.Stat.MaxHealth)
+                    {
+                        character.Stat.Health = character.Stat.MaxHealth;
+                    }
                     break;
                 }
-                case ItemType.Stamina_potion:
+                case ItemType.StaminaPotion:
                 {
                     character.Stat.Stamina += Value;
+                    if (character.Stat.Stamina > character.Stat.MaxStamina)
+                    {
+                        character.Stat.Stamina = character.Stat.MaxStamina;
+                    }
                     break;
                 }
             }
+            // 삭제하기 전에 꺼야한다
+            gameObject.SetActive(false);
+            ItemObjectFactory.Instance.RequestDelete(photonView.ViewID);
         }
-            
-
-        
     }
 }

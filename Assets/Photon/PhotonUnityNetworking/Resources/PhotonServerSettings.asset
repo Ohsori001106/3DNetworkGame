@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
   AppSettings:
-    AppIdRealtime: 7663d256-0cae-4895-b4fe-08d474a5873a
+    AppIdRealtime: d2486ac9-5a69-4a63-a462-d9f30f3e772c
     AppIdFusion: 
     AppIdChat: 
     AppIdVoice: 
@@ -28,7 +28,7 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: jp
+  DevRegion: hk
   PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
@@ -39,15 +39,15 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
-  - PlayAttackAnumation
   - Damaged
-  - CreateHitEffect
-  - HitEffect
+  - PlayAttackAnimation
   - Death
   - PlayMotion
   - Live
   - AddLog
-  - PlayAttackAnimation
+  - MakeItem
+  - Create
+  - Delete
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

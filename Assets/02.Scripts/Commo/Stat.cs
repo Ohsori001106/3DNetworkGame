@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]  //직렬화
+[Serializable]
 public class Stat
 {
     public int Damage;
 
-    public int    Health;
-    public int    MaxHealth;
+    public int Health;
+    public int MaxHealth;
 
     public float Stamina;
     public float MaxStamina;
@@ -20,11 +20,13 @@ public class Stat
     public float RunSpeed;
 
     public float RotationSpeed;
+
     public float AttackCoolTime;
     public float AttackConsumeStamina;
 
     public float JumpPower;
-    public float JumpConsumeStamina;
+    public float JumpConsumStamina;
+
 
     public void Init()
     {

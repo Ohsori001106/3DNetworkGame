@@ -38,8 +38,8 @@ public class Character : MonoBehaviour, IPunObservable, IDamaged
     {
         if (!PhotonView.IsMine)
         {
-            transform.position = Vector3.Lerp(transform.position, _receivedPosition, Time.deltaTime * 20f);
-            transform.rotation = Quaternion.Slerp(transform.rotation, _receivedRotation, Time.deltaTime * 20f);
+            //transform.position = Vector3.Lerp(transform.position, _receivedPosition, Time.deltaTime * 20f);
+            //transform.rotation = Quaternion.Slerp(transform.rotation, _receivedRotation, Time.deltaTime * 20f);
         }
     }
 
@@ -77,8 +77,6 @@ public class Character : MonoBehaviour, IPunObservable, IDamaged
         Stat.Health -= damage;
         if (Stat.Health <= 0)
         {
-            State = State.Death;
-
             if (PhotonView.IsMine)
             {
                 OnDeath(actorNumber);
@@ -120,12 +118,16 @@ public class Character : MonoBehaviour, IPunObservable, IDamaged
             impulseSource.GenerateImpulseWithVelocity(UnityEngine.Random.insideUnitSphere.normalized * strength);
         }
 
-        UI_DamgedEffect.Instance.Show(0.5f);
+        UI_DamagedEffect.Instance.Show(0.5f);
     }
 
     [PunRPC]
     private void Death()
     {
+        if(State == State.Death)
+        {
+            return;
+        }
         State = State.Death;
 
         GetComponent<Animator>().SetTrigger("Death");
@@ -134,6 +136,10 @@ public class Character : MonoBehaviour, IPunObservable, IDamaged
         // 죽고나서 5초후 리스폰
         if (PhotonView.IsMine)
         {
+            // 팩토리 패턴 : 객체 생성과 사용 로직을 분리해서 캡슐화하는 패턴
+           ItemObjectFactory.Instance.RequestCreate(ItemType.HealthPotion, transform.position);
+           ItemObjectFactory.Instance.RequestCreate(ItemType.StaminaPotion, transform.position);
+
             StartCoroutine(Death_Coroutine());
         }
     }
@@ -154,10 +160,6 @@ public class Character : MonoBehaviour, IPunObservable, IDamaged
         GetComponent<CharacterRotateAbility>().SetRandomRotation();
     }
 
-
-
-
-
     [PunRPC]
     private void Live()
     {
@@ -167,23 +169,4 @@ public class Character : MonoBehaviour, IPunObservable, IDamaged
 
         GetComponent<Animator>().SetTrigger("Live");
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class CharacterShakeAbility : CharacterAbility
@@ -15,6 +14,7 @@ public class CharacterShakeAbility : CharacterAbility
         StopAllCoroutines();
         StartCoroutine(Shake_Coroutine());
     }
+
     private IEnumerator Shake_Coroutine()
     {
         float elapsedTime = 0;
@@ -28,7 +28,7 @@ public class CharacterShakeAbility : CharacterAbility
             TargetTransform.localPosition = randomPosition;
             yield return null;
         }
-
         TargetTransform.localPosition = startPosition;
     }
 }
+

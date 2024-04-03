@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 public class CharacterAttackAbility : CharacterAbility
 {
@@ -31,26 +30,27 @@ public class CharacterAttackAbility : CharacterAbility
 
     private void Update()
     {
-        if (Owner.State == State.Death || !Owner.PhotonView.IsMine)
+        if (_owner.State == State.Death || !_owner.PhotonView.IsMine)
         {
             return;
         }
+
         _attackTimer += Time.deltaTime;
 
-        bool haveStamina = Owner.Stat.Stamina >= Owner.Stat.AttackConsumeStamina;
-        if (Input.GetMouseButtonDown(0) && _attackTimer >= Owner.Stat.AttackCoolTime && haveStamina)
+        bool haveStamina = _owner.Stat.Stamina >= _owner.Stat.AttackConsumeStamina;
+        if (Input.GetMouseButtonDown(0) && _attackTimer >= _owner.Stat.AttackCoolTime && haveStamina)
         {
-            Owner.Stat.Stamina -= Owner.Stat.AttackConsumeStamina;
+            _owner.Stat.Stamina -= _owner.Stat.AttackConsumeStamina;
 
             _attackTimer = 0f;
 
             if (GetComponent<CharacterMoveAbility>().IsJumping)
             {
-                Owner.PhotonView.RPC(nameof(PlayAttackAnimation), RpcTarget.All, 4);
+                _owner.PhotonView.RPC(nameof(PlayAttackAnimation), RpcTarget.All, 4);
             }
             else
             {
-                Owner.PhotonView.RPC(nameof(PlayAttackAnimation), RpcTarget.All, Random.Range(1, 4));
+                _owner.PhotonView.RPC(nameof(PlayAttackAnimation), RpcTarget.All, Random.Range(1, 4));
             }
             // RpcTarget.All     : 모두에게
             // RpcTarget.Others  : 나 자신을 제외하고 모두에게
@@ -66,7 +66,7 @@ public class CharacterAttackAbility : CharacterAbility
 
     public void OnTriggerEnter(Collider other)
     {
-        if (Owner.PhotonView.IsMine == false || other.transform == transform)
+        if (_owner.PhotonView.IsMine == false || other.transform == transform)
         {
             return;
         }
@@ -90,7 +90,7 @@ public class CharacterAttackAbility : CharacterAbility
                 // 피격 이펙트 생성
                 Vector3 hitPosition = (transform.position + other.transform.position) / 2f + new Vector3(0f, 1f);
                 PhotonNetwork.Instantiate("HitEffect", hitPosition, Quaternion.identity);
-                photonView.RPC("Damaged", RpcTarget.All, Owner.Stat.Damage, Owner.PhotonView.OwnerActorNr);
+                photonView.RPC("Damaged", RpcTarget.All, _owner.Stat.Damage, _owner.PhotonView.OwnerActorNr);
             }
             //damagedAbleObject.Damaged(_owner.Stat.Damage);
         }

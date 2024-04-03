@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
-public class CharacterAbility : MonoBehaviour
+public abstract class CharacterAbility : MonoBehaviour
 {
-    protected Character Owner {  get; private set; }
+    protected Character _owner {  get; private set; }
 
-    protected void Awake()
+    protected virtual  void Awake()
     {
-        Owner = GetComponentInParent<Character>();
+        _owner = GetComponentInParent<Character>();
     }
-   
 }

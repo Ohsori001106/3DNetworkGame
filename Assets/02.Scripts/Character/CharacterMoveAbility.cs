@@ -1,7 +1,8 @@
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEngine.UI.GridLayoutGroup;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(Animator))]
@@ -16,9 +17,10 @@ public class CharacterMoveAbility : CharacterAbility
     private float _gravity = -9.8f;
     private float _yVelocity = 0f;
 
-
-    private void Start()
+    protected override void Awake()    //characterAbility에서 이미 사용중이어서 override를 써줘서 재정의
     {
+        base.Awake();   // characterAbility에 있는 awake에 awake를 추가
+
         _characterController = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
     }
@@ -26,7 +28,7 @@ public class CharacterMoveAbility : CharacterAbility
 
     private void Update()
     {
-        if (Owner.State == State.Death || !Owner.PhotonView.IsMine)
+        if (_owner.State == State.Death || !_owner.PhotonView.IsMine)
         {
             return;
         }
@@ -41,42 +43,47 @@ public class CharacterMoveAbility : CharacterAbility
         dir.Normalize();
         dir = Camera.main.transform.TransformDirection(dir);
 
+        // Move애니메이션
         _animator.SetFloat("Move", dir.magnitude);
 
-        // 3. 중력 적용하세요.
+        // 중력 적용
         _yVelocity += _gravity * Time.deltaTime;
         dir.y = _yVelocity;
 
-        float moveSpeed = Owner.Stat.MoveSpeed;
-        if (Input.GetKey(KeyCode.LeftShift) && Owner.Stat.Stamina > 0)
+        // 달리기
+        float moveSpeed = _owner.Stat.MoveSpeed;
+        if (Input.GetKey(KeyCode.LeftShift) && _owner.Stat.Stamina > 0)
         {
-            moveSpeed = Owner.Stat.RunSpeed;
-            Owner.Stat.Stamina -= Time.deltaTime * Owner.Stat.RunConsumeStamina;
+            moveSpeed = _owner.Stat.RunSpeed;
+            _owner.Stat.Stamina -= Time.deltaTime * _owner.Stat.RunConsumeStamina;
         }
         else
         {
-            Owner.Stat.Stamina += Time.deltaTime * Owner.Stat.RecoveryStamina;
-            if (Owner.Stat.Stamina >= Owner.Stat.MaxStamina)
+            _owner.Stat.Stamina += Time.deltaTime * _owner.Stat.RecoveryStamina;
+            if (_owner.Stat.Stamina >= _owner.Stat.MaxStamina)
             {
-                Owner.Stat.Stamina = Owner.Stat.MaxStamina;
+                _owner.Stat.Stamina = _owner.Stat.MaxStamina;
             }
         }
+   
 
         // 4. 이동속도에 따라 그 방향으로 이동한다.
-        _characterController.Move(dir * (moveSpeed * Time.deltaTime));
+          _characterController.Move(dir * (moveSpeed * Time.deltaTime));
 
-        // 5. 점프 적용하기
-        bool haveJumpStamina = Owner.Stat.Stamina >= Owner.Stat.JumpConsumeStamina;
+        // 5. 점프하기
+        bool haveJumpStamina = _owner.Stat.Stamina >= _owner.Stat.JumpConsumeStamina;
         if (haveJumpStamina && Input.GetKeyDown(KeyCode.Space) && _characterController.isGrounded)
         {
-            Owner.Stat.Stamina -= Owner.Stat.JumpConsumeStamina;
-            _yVelocity = Owner.Stat.JumpPower;
+            _animator.SetTrigger("Jump");
+            _owner.Stat.Stamina -= _owner.Stat.JumpConsumeStamina;
+            _yVelocity = _owner.Stat.JumpPower;
         }
+
     }
 
     public void Teleport(Vector3 position)
     {
-        _characterController.enabled = false;
+        _characterController.enabled = false; //
 
         transform.position = position;
 
